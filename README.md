@@ -25,6 +25,44 @@ See [`diagram.html`](diagram.html) for a visual of how the skills work together.
 
 ![How Mercury skills work](diagram.png)
 
+## The Dashboard
+
+Mercury ships a local web dashboard — a central hub for your whole job search.
+Run one command and it opens in your browser:
+
+```bash
+mercury dashboard
+```
+
+What it gives you:
+
+- **Overview** — profile score, recruiters contacted/accepted/replied, interviews, jobs
+- **Profile** — recruiter-search metrics charted over time (views, search appearances, connections)
+- **Search** — instant LinkedIn job/people search (hybrid: raw results via the LinkedIn MCP)
+- **Launch** — run any Mercury skill through your agent (**opencode** or **Claude Code**) over [ACP](https://agentclientprotocol.com), with a live agent activity stream
+- **Recruiters** — kanban pipeline (pending → accepted → replied → interviewing → closed)
+- **Jobs / Applications / Interviews / Activity** — everything tracked
+
+The dashboard is a single Bun-compiled binary with the UI embedded. It binds to
+`127.0.0.1` on a random port with a URL token, and stores everything in a local
+SQLite database at `~/.mercury/mercury.db`.
+
+The `mercury` CLI is both the dashboard launcher **and** the write API the skills
+call (`mercury recruiter add`, `mercury job save`, …) — one schema, one source of truth.
+
+### Install
+
+```bash
+./install.sh                      # builds the binary, links it to ~/.local/bin
+mercury init                      # scaffold ~/.mercury/ + database
+mercury import-journey JOURNEY.md # optional: migrate an existing journal
+mercury dashboard                 # open the hub
+```
+
+Requires [Bun](https://bun.sh). For the **Launch** tab you also need an ACP-capable
+agent on PATH — `opencode` (native `opencode acp`) or `claude` (Claude Code, via
+`@zed-industries/claude-code-acp`).
+
 ## The `.mercury/` Directory
 
 Mercury stores all job search artifacts in a `.mercury/` folder in your workspace:

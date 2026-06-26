@@ -9,6 +9,7 @@ import { queries } from "./queries.ts";
 import { SessionManager } from "../acp/session.ts";
 import { PROVIDERS } from "../acp/providers.ts";
 import { loadConfig } from "../paths.ts";
+import { EMBEDDED_ASSETS } from "./assets.gen.ts";
 
 /** Directory holding the built Svelte assets (web/dist), resolved next to this file or the binary. */
 function webDir(): string {
@@ -198,15 +199,42 @@ async function handleSearch(path: string, req: Request): Promise<Response> {
 
 async function serveStatic(root: string, path: string, token: string): Promise<Response> {
   const rel = path === "/" ? "/index.html" : path;
+
+  // 1) Embedded assets (compiled binary) take priority.
+  const embedded = EMBEDDED_ASSETS[rel] ?? EMBEDDED_ASSETS["/index.html"];
+  if (EMBEDDED_ASSETS[rel]) {
+    return new Response(Buffer.from(EMBEDDED_ASSETS[rel]!, "base64"), {
+      headers: { "content-type": contentType(rel) },
+    });
+  }
+
+  // 2) On-disk build (running from source).
   const file = Bun.file(join(root, rel));
   if (await file.exists()) return new Response(file);
   // SPA fallback
   const index = Bun.file(join(root, "index.html"));
   if (await index.exists()) return new Response(index);
+  // Embedded SPA fallback
+  if (embedded) {
+    return new Response(Buffer.from(embedded, "base64"), {
+      headers: { "content-type": "text/html" },
+    });
+  }
   // No build yet — serve a helpful placeholder.
   return new Response(placeholderHtml(token), {
     headers: { "content-type": "text/html" },
   });
+}
+
+function contentType(p: string): string {
+  if (p.endsWith(".html")) return "text/html";
+  if (p.endsWith(".js")) return "text/javascript";
+  if (p.endsWith(".css")) return "text/css";
+  if (p.endsWith(".svg")) return "image/svg+xml";
+  if (p.endsWith(".json")) return "application/json";
+  if (p.endsWith(".png")) return "image/png";
+  if (p.endsWith(".woff2")) return "font/woff2";
+  return "application/octet-stream";
 }
 
 async function openBrowser(url: string): Promise<void> {

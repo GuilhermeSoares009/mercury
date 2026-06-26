@@ -8,8 +8,9 @@
   },
   "scripts": {
     "dev": "bun run src/cli/index.ts",
-    "build": "bun run build:web && bun run build:bin",
+    "build": "bun run build:web && bun run embed && bun run build:bin",
     "build:web": "cd web && bun install && bun run build",
+    "embed": "bun run scripts/embed-assets.ts",
     "build:bin": "bun build src/cli/index.ts --compile --outfile dist/mercury",
     "typecheck": "tsc --noEmit"
   },
