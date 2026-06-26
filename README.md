@@ -152,6 +152,20 @@ The bootstrap will:
 
 Env overrides: `MERCURY_REF` (branch/tag), `MERCURY_BIN_DIR`, `MERCURY_SKILLS_DIR`, `MERCURY_NO_SKILLS=1`.
 
+### Update notifications
+
+`mercury` checks (at most once every 10h, cached in `~/.mercury/update-check.json`)
+whether a newer version exists on `main`, and if so prints a one-line notice
+pointing you at the install command above. The check is best-effort: it has a
+short timeout, never blocks a command, fails silently when offline, and prints
+only to stderr (so skill output on stdout is never affected).
+
+Env overrides: `MERCURY_NO_UPDATE_CHECK=1` to disable it entirely;
+`MERCURY_UPDATE_URL` to point the check at a different `package.json`.
+The version itself is single-sourced from `app/package.json` at build time
+(bump that field when you ship, and older installs will see the notice).
+
+
 > Make sure `~/.local/bin` is on your `PATH` (the installer prints a hint if not).
 
 ### Manual (skills only)

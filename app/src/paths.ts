@@ -16,6 +16,8 @@ export const paths = {
   serverLock: join(MERCURY_HOME, "dashboard.lock"),
   /** Tailored resume artifacts default location (per-project override possible later). */
   artifacts: join(MERCURY_HOME, "artifacts"),
+  /** Cache file for the once-per-interval "newer version available" check. */
+  updateCache: join(MERCURY_HOME, "update-check.json"),
 };
 
 /** Ensure ~/.mercury/ and its subdirs exist. Safe to call repeatedly. */

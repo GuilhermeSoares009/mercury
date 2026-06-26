@@ -11,6 +11,8 @@ import {
   activityCmd,
 } from "./records.ts";
 import { importJourneyCmd } from "./import-journey.ts";
+import { VERSION } from "../version.gen.ts";
+import { checkForUpdate, maybePrintUpdateNotice } from "../update-check.ts";
 
 const HELP = `mercury — AI-powered job search companion
 
@@ -40,15 +42,22 @@ async function main() {
 
   if (!cmd || cmd === "-h" || cmd === "--help") {
     console.log(HELP);
+    await maybePrintUpdateNotice();
     return;
   }
   if (cmd === "-v" || cmd === "--version") {
-    console.log("mercury 0.1.0");
+    console.log(`mercury ${VERSION}`);
+    const notice = await checkForUpdate();
+    if (notice) console.error("\n" + notice);
     return;
   }
 
   const rest = argv.slice(1);
   const { positionals, flags } = parseFlags(rest);
+
+  // Kick off the update check concurrently with the command so the network
+  // round-trip overlaps real work instead of adding latency on top of it.
+  const updatePromise = checkForUpdate();
 
   switch (cmd) {
     case "init":
@@ -56,8 +65,11 @@ async function main() {
       break;
     case "dashboard": {
       const { dashboardCmd } = await import("../server/index.ts");
+      // Long-running server; print any update notice up front, then hand off.
+      const notice = await updatePromise;
+      if (notice) console.error("\n" + notice + "\n");
       await dashboardCmd(flags);
-      break;
+      return;
     }
     case "import-journey": {
       const file = positionals[0];
@@ -94,6 +106,11 @@ async function main() {
       console.log(HELP);
       process.exit(1);
   }
+
+  // For short-lived commands, surface the update notice as a footer once the
+  // real output is done. Bounded by the fetch timeout inside checkForUpdate().
+  const notice = await updatePromise;
+  if (notice) console.error("\n" + notice);
 }
 
 main().catch((err) => {
