@@ -116,6 +116,19 @@ Write a run log to `.mercury/logs/{ISO-timestamp}.md`:
 - Changes made vs base resume (diff summary)
 - Gaps flagged
 
+Also persist each tailored application to the Mercury database (powers the dashboard's Applications section):
+
+```
+mercury application add \
+  --job-id {db job id, if saved via job-scout} \
+  --resume-path ".mercury/tailored/{company}-{jobId}.typ" \
+  --cover-path ".mercury/cover-letters/{company}-{jobId}.md" \
+  --report-path ".mercury/reports/{company}-{jobId}.md" \
+  --keyword-score {0-100} --status draft
+
+mercury activity log --skill resume-tailor --summary "Tailored resume for {N} roles"
+```
+
 Print a summary table to the user:
 
 | Role | Company | Keyword Score | Strengths | Gaps | Files |

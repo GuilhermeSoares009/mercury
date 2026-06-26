@@ -93,13 +93,37 @@ connect_with_person(linkedin_username="{username}", note="{tailored_note}")
 - Space them out if sending many (LinkedIn may restrict)
 - If status returns "already pending", note it and move on
 
-### 6. Present Results Table
+### 6. Persist to Mercury
+
+After each connection request is sent, record it in the Mercury database via the CLI (this powers the dashboard):
+
+```
+mercury recruiter add \
+  --name "{Name}" --company "{Company}" --username "{linkedin_username}" \
+  --title "{Title}" --location "{City}" --degree "{2nd|3rd}" \
+  --status pending --note "{mutuals / context}"
+```
+
+When a recruiter accepts or replies, update their status:
+```
+mercury recruiter update --id {id} --status accepted   # or: replied | interviewing | closed
+```
+
+Log the outreach wave as an activity entry:
+```
+mercury activity log --skill recruiter-outreach --summary "Sent {N} requests to {companies}"
+```
+
+> If the `mercury` CLI isn't installed, fall back to appending a row to the
+> Recruiter Outreach Tracker table in the user's journal markdown.
+
+### 7. Present Results Table
 
 | Recruiter | Company | Title | Location | Degree | Status |
 |---|---|---|---|---|---|
 | Name | Company | Their title | City | 2nd/3rd | ✅ Sent / ⏳ Pending |
 
-### 7. Follow-up Guidance
+### 8. Follow-up Guidance
 
 Provide the user with:
 

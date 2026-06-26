@@ -68,6 +68,25 @@ Use two tables:
 
 Include job ID links as: `[{id}](https://www.linkedin.com/jobs/view/{id}/)`
 
+### 5b. Persist to Mercury
+
+Save each shortlisted role to the Mercury database (powers the dashboard's Jobs section):
+
+```
+mercury job save \
+  --linkedin-id {id} --title "{Role}" --company "{Company}" \
+  --location "{City}" --work-type "{remote|hybrid|onsite}" \
+  --comp "{comp if known}" --fit "{strong|good|stretch}" \
+  --link "https://www.linkedin.com/jobs/view/{id}/"
+```
+
+Log the scout run:
+```
+mercury activity log --skill job-scout --summary "Scouted {N} roles for {query}"
+```
+
+> If `mercury` isn't installed, just present the shortlist tables (below).
+
 ### 6. Flag Caveats
 
 - Diversity-scoped roles ("Vaga para mulheres", "PCD-only") — note eligibility

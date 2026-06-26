@@ -98,6 +98,22 @@ Present ranked pitfalls with specific, actionable fixes.
 - Navigate to profile and screenshot final state
 - Check analytics after 1-2 weeks for lift in search appearances
 
+### 4. Persist to Mercury
+
+Capture the profile metrics + computed score so the dashboard can chart progress over time. Run this whenever you pull fresh analytics (this is the only point profile metrics enter the system — the dashboard can't scrape them itself):
+
+```
+mercury metric record \
+  --search-appearances {N} --profile-views {N} \
+  --post-impressions {N} --connections {N} \
+  --score {0-100} --breakdown '{"openToWork":true,"headline":"strong",...}'
+```
+
+Log the optimization session:
+```
+mercury activity log --skill profile-optimizer --summary "Audited + fixed {what}; score {old}->{new}"
+```
+
 ## LinkedIn Deep Links Reference
 
 ```
