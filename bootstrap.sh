@@ -95,11 +95,11 @@ copy_skills() {
 
 # --- source build fallback ---------------------------------------------------
 install_from_source() {
-  info "Installing from source (building with Bun)…"
+  info "Installing from source (building with Bun)..."
   command -v git >/dev/null 2>&1 || die "git is required for a source build."
 
   if ! command -v bun >/dev/null 2>&1; then
-    warn "Bun not found — installing it (https://bun.sh)…"
+    warn "Bun not found — installing it (https://bun.sh)..."
     curl -fsSL https://bun.sh/install | bash >/dev/null 2>&1 \
       || die "Bun install failed. Install manually from https://bun.sh and re-run."
     export BUN_INSTALL="${BUN_INSTALL:-$HOME/.bun}"
@@ -125,7 +125,7 @@ install_from_source() {
     ok "Source cloned"
   fi
 
-  info "Building the mercury binary (this can take a minute)…"
+  info "Building the mercury binary (this can take a minute)..."
   ( cd "$SRC_DIR/app" && bun install --silent && bun run build >/dev/null )
   [ -f "$SRC_DIR/app/dist/mercury" ] || die "Build did not produce dist/mercury"
 
@@ -149,7 +149,7 @@ install_prebuilt() {
   local tmp; tmp="$(mktemp -d)"
   trap 'rm -rf "$tmp"' RETURN
 
-  info "Downloading ${asset}…"
+  info "Downloading ${asset}..."
   curl -fsSL "$base/$asset" -o "$tmp/mercury" || { warn "Binary download failed."; return 1; }
 
   # Verify checksum when SHA256SUMS is published and a hasher is available.
@@ -174,7 +174,7 @@ install_prebuilt() {
 
   # Skills still ship in the repo; grab just the skills/ tree from the tag.
   if [ "${MERCURY_NO_SKILLS:-0}" != "1" ]; then
-    info "Fetching skills for ${tag}…"
+    info "Fetching skills for ${tag}..."
     if curl -fsSL "https://codeload.github.com/${REPO_SLUG}/tar.gz/refs/tags/${tag}" -o "$tmp/src.tgz" 2>/dev/null \
        && tar -xzf "$tmp/src.tgz" -C "$tmp" 2>/dev/null; then
       local extracted; extracted="$(find "$tmp" -maxdepth 1 -type d -name 'mercury-*' | head -1)"
@@ -190,7 +190,7 @@ install_prebuilt() {
 if [ "${MERCURY_FROM_SOURCE:-0}" = "1" ]; then
   install_from_source
 elif ! install_prebuilt; then
-  warn "Falling back to a source build…"
+  warn "Falling back to a source build..."
   install_from_source
 fi
 
