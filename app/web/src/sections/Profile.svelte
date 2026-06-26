@@ -105,20 +105,20 @@
   }
 </script>
 
-<div style="display:flex;align-items:start;justify-content:space-between;gap:16px">
+<div class="flex items-start justify-between gap-4">
   <div>
     <h1 class="page-title">Profile</h1>
     <p class="page-sub">Recruiter-search visibility + audit breakdown</p>
   </div>
-  <button class="scan" onclick={scan} disabled={scanning}>
+  <button class="btn-success" onclick={scan} disabled={scanning}>
     {scanning ? "Scanning…" : hasScan ? "Re-scan profile" : "Scan profile"}
   </button>
 </div>
 
 {#if scanLog.length}
-  <div class="panel scanbox">
+  <div class="panel">
     <h3>Profile scan {#if scanning}<span class="live-dot"></span>{/if}</h3>
-    {#each scanLog as line}<div class="scanline">{line}</div>{/each}
+    {#each scanLog as line}<div class="font-mono text-[0.8rem] text-muted py-px">{line}</div>{/each}
   </div>
 {/if}
 
@@ -142,12 +142,12 @@
 
   {#if breakdown.length}
     <div class="panel">
-      <h3>Audit breakdown <span class="dim" style="font-size:.78rem;font-weight:400">· last scan {new Date(snapshot.capturedAt).toLocaleDateString()}</span></h3>
-      <div class="breakdown">
+      <h3>Audit breakdown <span class="dim text-[0.78rem] font-normal">· last scan {new Date(snapshot.capturedAt).toLocaleDateString()}</span></h3>
+      <div class="bd-grid">
         {#each breakdown as item}
           <div class="bd-row">
             <span class="bd-label">{item.label}</span>
-            {#if item.value}<span class="pill {pillClass(item.value)}">{item.value}</span>{/if}
+            {#if item.value}<span class="bd-pill {pillClass(item.value)}">{item.value}</span>{/if}
           </div>
         {/each}
       </div>
@@ -157,28 +157,8 @@
   <div class="panel">
     <h3>Trend</h3>
     {#if metrics.length === 1}
-      <p class="dim" style="font-size:.85rem;margin-bottom:12px">Only one snapshot so far — the trend line fills in as you re-scan over time.</p>
+      <p class="dim text-[0.85rem] mb-3">Only one snapshot so far — the trend line fills in as you re-scan over time.</p>
     {/if}
     <div bind:this={chartEl}></div>
   </div>
 {/if}
-
-<style>
-  .scan {
-    background:linear-gradient(135deg,#22c55e,#4ade80); color:#0a0a0f; border:none;
-    padding:9px 18px; border-radius:8px; cursor:pointer; font-weight:700; font-size:.85rem;
-    white-space:nowrap; flex-shrink:0;
-  }
-  .scan:disabled { opacity:.55; cursor:not-allowed; }
-  .scanbox .scanline { font-family:ui-monospace,monospace; font-size:.8rem; color:var(--muted); padding:1px 0; }
-  .breakdown { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:8px; }
-  .bd-row {
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:9px 12px;
-  }
-  .bd-label { font-size:.85rem; text-transform:capitalize; }
-  .pill { padding:2px 9px; border-radius:999px; font-size:.72rem; font-weight:600; }
-  .pill.good { background:rgba(34,197,94,.15); color:var(--green); }
-  .pill.bad { background:rgba(239,68,68,.15); color:var(--red); }
-  .pill.neutral { background:#27272a; color:var(--muted); }
-</style>

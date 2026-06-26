@@ -22,10 +22,10 @@
 {:else}
   <div class="panel">
     {#each activity.data as a}
-      <div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
-        <span class="dim" style="font-size:.78rem;min-width:140px">{new Date(a.ts).toLocaleString()}</span>
+      <div class="flex gap-3 py-2.5 border-b border-border">
+        <span class="dim text-[0.78rem] min-w-[140px]">{new Date(a.ts).toLocaleString()}</span>
         {#if a.skill}<span class="pill replied">{a.skill}</span>{/if}
-        <span class="muted" style="font-size:.88rem">{a.summary ?? a.kind}</span>
+        <span class="muted text-[0.88rem]">{a.summary ?? a.kind}</span>
       </div>
     {/each}
   </div>

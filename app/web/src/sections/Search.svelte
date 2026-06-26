@@ -60,13 +60,13 @@
     </Tabs.List>
   </Tabs.Root>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end">
-    <label>Keywords<input bind:value={keywords} placeholder={mode === 'jobs' ? 'software engineer' : 'recruiter engineer Brazil'} /></label>
+  <div class="grid grid-cols-[1fr_1fr_1fr_auto] gap-2.5 items-end">
+    <label class="field-label">Keywords<input class="input" bind:value={keywords} placeholder={mode === 'jobs' ? 'software engineer' : 'recruiter engineer Brazil'} /></label>
     {#if mode === 'people'}
-      <label>Company<input bind:value={company} placeholder="Airbnb" /></label>
+      <label class="field-label">Company<input class="input" bind:value={company} placeholder="Airbnb" /></label>
     {/if}
-    <label>Location<input bind:value={location} placeholder="São Paulo" /></label>
-    <button class="go" onclick={run} disabled={loading || !keywords}>
+    <label class="field-label">Location<input class="input" bind:value={location} placeholder="São Paulo" /></label>
+    <button class="btn-primary" onclick={run} disabled={loading || !keywords}>
       <SearchIcon size={15} strokeWidth={2.2} />
       {loading ? "Searching…" : "Search"}
     </button>
@@ -74,10 +74,10 @@
 </div>
 
 {#if error}
-  <div class="panel" style="border-color:var(--red)">
-    <strong style="color:var(--red)">Search failed.</strong>
-    <p class="muted" style="font-size:.85rem;margin-top:6px">{error}</p>
-    <p class="dim" style="font-size:.8rem;margin-top:6px">
+  <div class="panel border-red">
+    <strong class="text-red">Search failed.</strong>
+    <p class="muted text-[0.85rem] mt-1.5">{error}</p>
+    <p class="dim text-[0.8rem] mt-1.5">
       Make sure the LinkedIn MCP is reachable and you're logged in to LinkedIn in your browser session.
     </p>
   </div>
@@ -85,33 +85,12 @@
   <div class="panel">
     <h3>Results</h3>
     {#if resultRefs.length}
-      <div style="margin-bottom:12px;display:flex;flex-wrap:wrap;gap:8px">
+      <div class="mb-3 flex flex-wrap gap-2">
         {#each resultRefs.filter((r) => r.kind === "person" || r.kind === "job") as ref}
-          <a class="ref" href={`https://www.linkedin.com${ref.url}`} target="_blank">{ref.text ?? ref.url}</a>
+          <a class="bg-panel-2 border border-border-2 rounded-[7px] px-2.5 py-1 text-[0.8rem]" href={`https://www.linkedin.com${ref.url}`} target="_blank">{ref.text ?? ref.url}</a>
         {/each}
       </div>
     {/if}
-    <pre class="results">{resultText}</pre>
+    <pre class="bg-panel-2 border border-border rounded-lg p-3.5 text-[0.82rem] leading-normal text-muted whitespace-pre-wrap max-h-[520px] overflow-auto font-mono">{resultText}</pre>
   </div>
 {/if}
-
-<style>
-  label { display:flex; flex-direction:column; gap:6px; font-size:.78rem; color:var(--dim); }
-  input {
-    background:var(--panel-2); border:1px solid var(--border-2); border-radius:8px;
-    padding:9px 11px; color:var(--text); font-size:.9rem;
-  }
-  input:focus { outline:none; border-color:var(--blue); }
-  .go {
-    display:inline-flex; align-items:center; gap:7px;
-    background:linear-gradient(135deg,var(--blue),var(--cyan)); color:white; border:none;
-    padding:9px 18px; border-radius:8px; cursor:pointer; font-weight:600; font-size:.9rem;
-  }
-  .go:disabled { opacity:.5; cursor:not-allowed; }
-  .ref { background:var(--panel-2); border:1px solid var(--border-2); border-radius:7px; padding:4px 10px; font-size:.8rem; }
-  .results {
-    background:var(--panel-2); border:1px solid var(--border); border-radius:8px;
-    padding:14px; font-size:.82rem; line-height:1.5; color:var(--muted);
-    white-space:pre-wrap; max-height:520px; overflow:auto; font-family:ui-monospace,monospace;
-  }
-</style>

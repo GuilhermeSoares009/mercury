@@ -5,27 +5,17 @@
   let { error = "Something went wrong.", onretry } = $props();
 </script>
 
-<div class="panel err">
-  <strong class="err-title">Couldn't load this section.</strong>
-  <p class="err-msg">{error}</p>
-  <p class="err-hint">
+<div class="panel border-red">
+  <strong class="text-red">Couldn't load this section.</strong>
+  <p class="text-muted text-[0.85rem] mt-1.5 break-words">{error}</p>
+  <p class="text-dim text-[0.8rem] mt-1.5">
     If this persists, make sure the LinkedIn MCP is reachable and you're logged in
     to LinkedIn in your browser session, then retry.
   </p>
   {#if onretry}
-    <button class="retry" onclick={onretry}>Retry</button>
+    <button
+      class="mt-3 bg-transparent text-red border border-red px-4 py-[7px] rounded-lg cursor-pointer text-[0.85rem] font-semibold hover:bg-red/10"
+      onclick={onretry}
+    >Retry</button>
   {/if}
 </div>
-
-<style>
-  .err { border-color: var(--red); }
-  .err-title { color: var(--red); }
-  .err-msg { color: var(--muted); font-size: .85rem; margin-top: 6px; word-break: break-word; }
-  .err-hint { color: var(--dim); font-size: .8rem; margin-top: 6px; }
-  .retry {
-    margin-top: 12px; background: transparent; color: var(--red);
-    border: 1px solid var(--red); padding: 7px 16px; border-radius: 8px;
-    cursor: pointer; font-size: .85rem; font-weight: 600;
-  }
-  .retry:hover { background: rgba(239, 68, 68, .12); }
-</style>

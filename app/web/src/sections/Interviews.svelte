@@ -30,12 +30,12 @@
       {@const d = daysUntil(iv.scheduled_at)}
       <div class="card">
         <div class="label">{iv.company}</div>
-        <div class="value" style="font-size:1.3rem">{iv.scheduled_at ?? "TBD"}</div>
-        <div class="dim" style="font-size:.82rem;margin-top:4px">
+        <div class="value text-[1.3rem]">{iv.scheduled_at ?? "TBD"}</div>
+        <div class="dim text-[0.82rem] mt-1">
           {iv.stage ?? ""} · {iv.status}
-          {#if d != null && d >= 0}<br /><span style="color:var(--amber)">in {d} day{d === 1 ? "" : "s"}</span>{/if}
+          {#if d != null && d >= 0}<br /><span class="text-amber">in {d} day{d === 1 ? "" : "s"}</span>{/if}
         </div>
-        {#if iv.notes}<div class="muted" style="font-size:.8rem;margin-top:8px">{iv.notes}</div>{/if}
+        {#if iv.notes}<div class="muted text-[0.8rem] mt-2">{iv.notes}</div>{/if}
       </div>
     {/each}
   </div>

@@ -1,6 +1,7 @@
 <script>
   import { api, post, subscribe } from "../api.js";
   import { Rocket, X } from "@lucide/svelte";
+  import Select from "../lib/Select.svelte";
 
   let providers = $state([]);
   let provider = $state("opencode");
@@ -95,55 +96,54 @@
     { id: "profile-optimizer", label: "Profile Optimizer" },
     { id: "resume-tailor", label: "Resume Tailor" },
   ];
+
+  // Bits UI Select item lists ({value,label}).
+  let providerItems = $derived(providers.map((p) => ({ value: p.id, label: p.displayName })));
+  let modelItems = $derived([
+    { value: "", label: "Default" },
+    ...(providers.find((p) => p.id === provider)?.models ?? []).map((m) => ({ value: m, label: m })),
+  ]);
+  const skillItems = skills.map((s) => ({ value: s.id, label: s.label }));
 </script>
 
 <h1 class="page-title">Launch</h1>
 <p class="page-sub">Run a Mercury skill through your agent — live</p>
 
 <div class="panel">
-  <div class="row">
-    <label>Agent
-      <select bind:value={provider}>
-        {#each providers as p}<option value={p.id}>{p.displayName}</option>{/each}
-      </select>
+  <div class="grid grid-cols-3 gap-3">
+    <label class="field-label">Agent
+      <Select items={providerItems} bind:value={provider} placeholder="Agent" ariaLabel="Agent" />
     </label>
-    <label>Model
-      <select bind:value={model}>
-        <option value="">Default</option>
-        {#each (providers.find(p => p.id === provider)?.models ?? []) as m}
-          <option value={m}>{m}</option>
-        {/each}
-      </select>
+    <label class="field-label">Model
+      <Select items={modelItems} bind:value={model} placeholder="Default" ariaLabel="Model" />
     </label>
-    <label>Skill
-      <select bind:value={skill}>
-        {#each skills as s}<option value={s.id}>{s.label}</option>{/each}
-      </select>
+    <label class="field-label">Skill
+      <Select items={skillItems} bind:value={skill} placeholder="Skill" ariaLabel="Skill" />
     </label>
   </div>
 
-  <div class="row" style="margin-top:12px">
+  <div class="grid grid-cols-3 gap-3 mt-3">
     {#if skill === "job-scout"}
-      <label>Query<input bind:value={query} placeholder="backend engineer" /></label>
-      <label>Location<input bind:value={location} /></label>
+      <label class="field-label">Query<input class="input" bind:value={query} placeholder="backend engineer" /></label>
+      <label class="field-label">Location<input class="input" bind:value={location} /></label>
     {:else if skill === "recruiter-outreach"}
-      <label>Company<input bind:value={company} placeholder="Airbnb" /></label>
-      <label>Location<input bind:value={location} /></label>
+      <label class="field-label">Company<input class="input" bind:value={company} placeholder="Airbnb" /></label>
+      <label class="field-label">Location<input class="input" bind:value={location} /></label>
     {:else if skill === "resume-tailor"}
-      <label>Job IDs (comma-sep)<input bind:value={jobIds} placeholder="4393940374, 3969556398" /></label>
+      <label class="field-label">Job IDs (comma-sep)<input class="input" bind:value={jobIds} placeholder="4393940374, 3969556398" /></label>
     {:else if skill === "profile-optimizer"}
-      <span class="dim" style="font-size:.85rem;align-self:center">No parameters — audits your profile.</span>
+      <span class="dim text-[0.85rem] self-center">No parameters — audits your profile.</span>
     {:else if skill === "experience-bank"}
-      <span class="dim" style="font-size:.85rem;align-self:center">No parameters — interviews you about new achievements (interactive).</span>
+      <span class="dim text-[0.85rem] self-center">No parameters — interviews you about new achievements (interactive).</span>
     {/if}
   </div>
 
-  <div style="margin-top:14px;display:flex;gap:10px">
-    <button class="go" onclick={launch} disabled={running}>
+  <div class="mt-3.5 flex gap-2.5">
+    <button class="btn-primary" onclick={launch} disabled={running}>
       <Rocket size={15} strokeWidth={2.2} />
       {running ? "Running…" : "Launch"}
     </button>
-    {#if running}<button class="cancel" onclick={cancel}><X size={15} strokeWidth={2.2} /> Cancel</button>{/if}
+    {#if running}<button class="btn-danger" onclick={cancel}><X size={15} strokeWidth={2.2} /> Cancel</button>{/if}
   </div>
 </div>
 
@@ -154,29 +154,8 @@
   {:else}
     <div class="stream">
       {#each log as entry}
-        <div class="line {entry.kind}">{entry.text}</div>
+        <div class="stream-line {entry.kind}">{entry.text}</div>
       {/each}
     </div>
   {/if}
 </div>
-
-<style>
-  .row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
-  label { display:flex; flex-direction:column; gap:6px; font-size:.78rem; color:var(--dim); }
-  input, select {
-    background:var(--panel-2); border:1px solid var(--border-2); border-radius:8px;
-    padding:9px 11px; color:var(--text); font-size:.9rem;
-  }
-  input:focus, select:focus { outline:none; border-color:var(--blue); }
-  .go { display:inline-flex; align-items:center; gap:7px; background:linear-gradient(135deg,var(--blue),var(--cyan)); color:white; border:none; padding:9px 20px; border-radius:8px; cursor:pointer; font-weight:600; }
-  .go:disabled { opacity:.5; cursor:not-allowed; }
-  .cancel { display:inline-flex; align-items:center; gap:6px; background:transparent; color:var(--red); border:1px solid var(--red); padding:9px 16px; border-radius:8px; cursor:pointer; }
-  .stream { background:var(--panel-2); border:1px solid var(--border); border-radius:8px; padding:14px; max-height:460px; overflow:auto; font-family:ui-monospace,monospace; font-size:.82rem; }
-  .line { padding:1px 0; white-space:pre-wrap; line-height:1.5; }
-  .line.msg { color:var(--text); }
-  .line.tool { color:var(--cyan); }
-  .line.status { color:var(--green); }
-  .line.plan { color:var(--purple); }
-  .line.perm { color:var(--amber); }
-  .line.err { color:var(--red); }
-</style>

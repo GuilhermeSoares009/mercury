@@ -32,7 +32,7 @@
             <td>{a.company_name ?? "—"}</td>
             <td>{a.keyword_score != null ? `${a.keyword_score}%` : "—"}</td>
             <td class="dim">{a.status}</td>
-            <td class="dim" style="font-size:.78rem">
+            <td class="dim text-[0.78rem]">
               {#if a.resume_path}resume {/if}{#if a.cover_letter_path}· cover {/if}{#if a.report_path}· report{/if}
             </td>
           </tr>
