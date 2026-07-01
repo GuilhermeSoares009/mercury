@@ -15,6 +15,7 @@ import {
 import { importJourneyCmd } from "./import-journey.ts";
 import { VERSION } from "../version.gen.ts";
 import { checkForUpdate, maybePrintUpdateNotice } from "../update-check.ts";
+import { loadSafetyConfig } from "../safety/gate.ts";
 
 const HELP = `mercury — AI-powered job search companion
 
@@ -23,6 +24,9 @@ Usage:
   mercury init                       Scaffold ~/.mercury/ + database
   mercury update [--force]          Update Mercury to the latest release
   mercury linkedin reset             Clear stale LinkedIn MCP browser sessions + locks
+  mercury safety status              View safety gate status
+  mercury safety reset               Reset safety quotas and delay timer
+  mercury safety config --enabled true|false  Toggle safety gate
   mercury dashboard [--port N] [--no-open] [--provider opencode|claude-code]
   mercury import-journey <FILE.md>   Migrate a legacy JOURNEY.md into the db
 
@@ -156,6 +160,11 @@ async function main() {
     case "linkedin": {
       const { linkedinCmd } = await import("./linkedin.ts");
       await linkedinCmd(positionals[0] ?? "", flags);
+      break;
+    }
+    case "safety": {
+      const { safetyCmd } = await import("./safety.ts");
+      await safetyCmd(positionals[0] ?? "", flags);
       break;
     }
     default:

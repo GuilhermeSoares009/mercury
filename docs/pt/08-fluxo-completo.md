@@ -4,6 +4,11 @@ Este documento descreve o pipeline completo do Mercury, do início ao fim. Cada
 seção corresponde a uma etapa que o usuário executa (algumas uma vez, outras
 periodicamente, outras por vaga).
 
+> ⚠️ **Dry-run por padrão:** desde a v2, comandos destrutivos como `mercury
+> recruiter add` e `mercury application add` rodam em **dry-run** por padrão
+> (registram no banco mas sem delay). Para executar com delays reais entre ações,
+> adicione `--live` ao comando. Consulte `07-seguranca.md` para detalhes.
+
 ```
 experience-bank ──→ profile-optimizer ──→ job-scout ──→ resume-tailor ──→ recruiter-outreach ──→ outreach-tracker
     (trimestral)        (semanal)        (diário)        (por vaga)         (por vaga)            (diário)

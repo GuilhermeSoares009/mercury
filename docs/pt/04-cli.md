@@ -110,6 +110,52 @@ mercury dashboard --provider opencode # define o provedor ACP
 
 ---
 
+## mercury safety
+
+Gerencia o Safety Gate — camada anti-bloqueio que limita ações e adiciona delays.
+
+### mercury safety status
+
+Exibe status atual do safety gate, quotas usadas nas últimas 24h e configuração de delays.
+
+```bash
+mercury safety status
+```
+
+Saída típica:
+```
+Safety gate: ✅ ON
+Dry-run: ✅ ON (default)
+
+Actions in last 24h:
+  recruiter.add: 3
+  job.save: 12
+
+Delays: 180s - 900s
+```
+
+### mercury safety reset
+
+Redefine quotas e timer de delay para zero. Útil após pausa real (ex: esperou 1h, pode continuar).
+
+```bash
+mercury safety reset
+```
+
+### mercury safety config
+
+Ajusta configurações do safety gate:
+
+```bash
+mercury safety config --enabled true|false
+mercury safety config --dry-run true|false
+mercury safety config --invites-limit 20
+mercury safety config --jobs-limit 100
+mercury safety config --apps-limit 15
+```
+
+---
+
 ## mercury linkedin reset
 
 Limpa sessões órfãs do navegador Chromium usado pelo LinkedIn MCP

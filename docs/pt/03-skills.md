@@ -4,6 +4,15 @@
 para saber como executar uma tarefa. As skills instruem o agente a rodar comandos
 `mercury ...` (CLI) e usar ferramentas MCP (LinkedIn MCP, Chrome MCP).
 
+> ⚠️ **Dry-run por padrão:** desde a v2, toda ação destrutiva (convite, candidatura,
+> salvamento de vaga) roda em **dry-run** por padrão. O comando é executado no banco
+> mas **não avança o timer de delay**. Para ativar comportamento real (com delays
+> entre ações), skills devem usar `--live`:
+> ```bash
+> mercury recruiter add --name "..." --company "..." --live
+> ```
+> O safety gate gerencia isso automaticamente. Consulte `docs/pt/07-seguranca.md`.
+
 O ecossistema completo:
 
 ```

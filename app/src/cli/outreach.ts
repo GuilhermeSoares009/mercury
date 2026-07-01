@@ -17,6 +17,7 @@
  */
 import { type Flags, str, int, reqStr } from "./flags.ts";
 import { loadOutreachConfig } from "../paths.ts";
+import { check, passed } from "../safety/gate.ts";
 import {
   logAttempt,
   transition,
@@ -41,6 +42,11 @@ function fmtAttempt(a: OutreachAttempt): string {
 export async function outreachCmd(sub: string, flags: Flags): Promise<void> {
   switch (sub) {
     case "log": {
+      const logSafety = await check("outreach.log");
+      if (!logSafety.allowed) {
+        console.error(`⚠️  blocked by safety gate: ${logSafety.reason}`);
+        process.exit(1);
+      }
       const a = logAttempt({
         username: reqStr(flags, "username"),
         name: str(flags, "name"),
@@ -166,6 +172,11 @@ export async function outreachCmd(sub: string, flags: Flags): Promise<void> {
     }
 
     case "withdraw": {
+      const withdrawSafety = await check("outreach.withdraw");
+      if (!withdrawSafety.allowed) {
+        console.error(`⚠️  blocked by safety gate: ${withdrawSafety.reason}`);
+        process.exit(1);
+      }
       const id = int(flags, "id");
       if (id === undefined) {
         console.error("error: missing --id");

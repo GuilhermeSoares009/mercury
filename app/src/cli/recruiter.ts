@@ -1,11 +1,20 @@
 import { db, now } from "../db/index.ts";
 import { notifyChange } from "../db/notify.ts";
 import { type Flags, str, int, reqStr } from "./flags.ts";
+import { check, passed } from "../safety/gate.ts";
 
 /** mercury recruiter add|update */
 export async function recruiterCmd(sub: string, flags: Flags): Promise<void> {
   const d = db();
   if (sub === "add") {
+    const safety = await check("recruiter.add");
+    if (!safety.allowed) {
+      console.error(`⚠️  blocked by safety gate: ${safety.reason}`);
+      if (safety.dryRun) {
+        console.error(`  (dry-run: re-run with --live to bypass dry-run or adjust quotas via \`mercury safety config\`)`);
+      }
+      process.exit(1);
+    }
     const name = reqStr(flags, "name");
     const stmt = d.query(`
       INSERT INTO recruiters (name, username, company, title, location, degree, mutuals_json, status, date_contacted, note, source_skill)
@@ -30,7 +39,9 @@ export async function recruiterCmd(sub: string, flags: Flags): Promise<void> {
       $skill: str(flags, "source-skill") ?? "recruiter-outreach",
     }) as { id: number };
     await notifyChange("recruiters");
-    console.log(`recruiter #${row.id} (${name}) saved`);
+    const live = flags.live === true;
+    if (live) await passed("recruiter.add");
+    console.log(`recruiter #${row.id} (${name}) saved${live ? "" : " (dry-run)"}`);
     return;
   }
   if (sub === "update") {

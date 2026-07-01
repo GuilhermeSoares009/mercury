@@ -13,6 +13,73 @@ centrais. Nada do seu dado pessoal sai da sua máquina sem sua aprovação expl�
 
 ---
 
+## Safety Gate (Anti-Bloqueio)
+
+A safety gate é uma **camada de proteção no código** que limita ações automatizadas para evitar bloqueio do LinkedIn. Diferente das instruções nos arquivos SKILL.md (que o LLM pode ignorar), a safety gate é **imposta pela CLI**.
+
+### Quotas por Ação
+
+| Ação | Limite | Janela |
+|------|--------|--------|
+| Recrutador adicionado (convite enviado) | 15 | por sessão |
+| Vagas salvas | 50 | por dia |
+| Candidaturas adicionadas | 10 | por dia |
+| Buscas MCP (match) | 30 | por hora |
+
+Se o limite é atingido, o comando bloqueia com erro:
+```
+⚠️  blocked by safety gate: quota exceeded for recruiter.add (limit 15)
+```
+Use `mercury safety reset` para redefinir (útil após intervalo de espera real).
+
+### Delay Aleatório Entre Ações
+
+Após cada ação destrutiva (convite, candidatura), a CLI espera **3 a 15 minutos** aleatórios antes de permitir a próxima. Isso simula comportamento humano e reduz detecção.
+
+O delay só é ativado quando o comando é executado com `--live` (dry-run não conta).
+
+### Dry-Run como Padrão
+
+Toda ação destrutiva roda em **dry-run por padrão** — registra no banco mas **não avança o timer de delay**. Para ativar o comportamento real (com delay), use `--live`:
+
+```bash
+mercury recruiter add --name "João Silva" --company "Acme" --live
+```
+
+Isso evita que uma sessão de setup ou teste acione delays desnecessários.
+
+### Gerenciamento
+
+```bash
+mercury safety status          # Ver status atual
+mercury safety reset           # Redefinir quotas e timer
+mercury safety config --enabled false   # Desativar (não recomendado)
+mercury safety config --invites-limit 20   # Ajustar limite
+```
+
+### Configuração Persistente
+
+As regras ficam em `~/.mercury/config.json`:
+
+```json
+{
+  "safety": {
+    "enabled": true,
+    "dryRun": true,
+    "quotas": {
+      "invitesPerSession": 15,
+      "jobsPerDay": 50,
+      "applicationsPerDay": 10,
+      "searchesPerHour": 30
+    },
+    "delays": {
+      "minSeconds": 180,
+      "maxSeconds": 900
+    }
+  }
+}
+```
+
 ## Dashboard
 
 ### Bind e Token

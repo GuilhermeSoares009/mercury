@@ -41,6 +41,21 @@ export interface MercuryConfig {
     inmail?: Partial<OutreachConfig["inmail"]>;
     invites?: Partial<OutreachConfig["invites"]>;
   };
+  /** Safety gate settings (anti-blocking). */
+  safety?: {
+    enabled?: boolean;
+    dryRun?: boolean;
+    quotas?: {
+      invitesPerSession?: number;
+      jobsPerDay?: number;
+      applicationsPerDay?: number;
+      searchesPerHour?: number;
+    };
+    delays?: {
+      minSeconds?: number;
+      maxSeconds?: number;
+    };
+  };
 }
 
 /**

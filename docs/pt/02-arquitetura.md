@@ -377,6 +377,27 @@ bun run test       Bun test (executa todos os *.test.ts)
 
 ---
 
+## Safety Gate (Anti-Bloqueio)
+
+O Mercury v2 inclui uma **camada de proteção contra bloqueio do LinkedIn** no
+código da CLI, chamada Safety Gate. Diferente das instruções nos SKILL.md (que
+o LLM pode ignorar), a Safety Gate é **imposta tecnicamente**:
+
+- **Quotas:** limites codificados por ação (15 convites/sessão, 10 apps/dia, etc.)
+- **Delay aleatório:** 3-15 minutos entre ações (só em modo `--live`)
+- **Dry-run como padrão:** comandos registram no banco mas não disparam delay
+- **Audit trail:** toda ação é logada em SQLite para debug
+
+Gerenciamento:
+
+```bash
+mercury safety status
+mercury safety reset
+mercury safety config --enabled false
+```
+
+Consulte `07-seguranca.md` para detalhes completos.
+
 ## Segurança e Privacidade
 
 - **Tudo local** — o banco SQLite, as skills, os currículos. Nenhum dado sai da sua máquina.

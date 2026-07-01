@@ -1,11 +1,17 @@
 import { db, now } from "../db/index.ts";
 import { notifyChange } from "../db/notify.ts";
 import { type Flags, str, int, reqStr } from "./flags.ts";
+import { check, passed } from "../safety/gate.ts";
 
 /** mercury job save */
 export async function jobCmd(sub: string, flags: Flags): Promise<void> {
   const d = db();
   if (sub === "save") {
+    const jobSafety = await check("job.save");
+    if (!jobSafety.allowed) {
+      console.error(`⚠️  blocked by safety gate: ${jobSafety.reason}`);
+      process.exit(1);
+    }
     const row = d.query(`
       INSERT INTO jobs (linkedin_job_id, title, company_name, location, work_type, comp, fit, requirements_json, status, link)
       VALUES ($jid, $title, $company, $location, $work, $comp, $fit, $reqs, $status, $link)
@@ -26,7 +32,9 @@ export async function jobCmd(sub: string, flags: Flags): Promise<void> {
       $link: str(flags, "link") ?? null,
     }) as { id: number };
     await notifyChange("jobs");
-    console.log(`job #${row.id} saved`);
+    const live = flags.live === true;
+    if (live) await passed("job.save");
+    console.log(`job #${row.id} saved${live ? "" : " (dry-run)"}`);
     return;
   }
   console.error(`unknown job subcommand: ${sub}`);
@@ -101,6 +109,11 @@ export async function interviewCmd(sub: string, flags: Flags): Promise<void> {
 export async function applicationCmd(sub: string, flags: Flags): Promise<void> {
   const d = db();
   if (sub === "add") {
+    const appSafety = await check("application.add");
+    if (!appSafety.allowed) {
+      console.error(`⚠️  blocked by safety gate: ${appSafety.reason}`);
+      process.exit(1);
+    }
     const row = d.query(`
       INSERT INTO applications (job_id, resume_path, cover_letter_path, report_path, keyword_score, status, applied_at, portal, external_url)
       VALUES ($job, $resume, $cover, $report, $score, $status, $applied, $portal, $url)
@@ -117,7 +130,9 @@ export async function applicationCmd(sub: string, flags: Flags): Promise<void> {
       $url: str(flags, "external-url") ?? null,
     }) as { id: number };
     await notifyChange("applications");
-    console.log(`application #${row.id} added`);
+    const live = flags.live === true;
+    if (live) await passed("application.add");
+    console.log(`application #${row.id} added${live ? "" : " (dry-run)"}`);
     return;
   }
   if (sub === "update") {
