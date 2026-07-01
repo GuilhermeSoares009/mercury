@@ -4,6 +4,8 @@ Working notes for AI agents (and humans) contributing to **Mercury**. This file
 holds the project conventions, architecture, build/dev workflow, and gotchas that
 don't belong in the user-facing README.
 
+> 📖 **Documentação em português disponível em `docs/pt/`** — cobre instalação, arquitetura, skills, CLI, dashboard, protocolos, segurança e fluxo completo.
+
 ## What Mercury is
 
 A job-search companion split into two halves:
